@@ -1,11 +1,8 @@
 {
   "autoload": {
     "psr-4": {
-      "dbeurive\\Filer\\": "src"
+      "dbeurive\\Gpg\\": "src"
     }
-  },
-  "require": {
-    "symfony/console": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "5.5.*"

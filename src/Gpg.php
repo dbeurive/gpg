@@ -14,7 +14,7 @@
  * Therefore, the only the basic GPG functionalities have been wrapped (signing, encryption, decryption and signature verification).
  */
 
-namespace dbeurive\Filer;
+namespace dbeurive\Gpg;
 
 /**
  * Class Gpg
@@ -101,7 +101,7 @@ namespace dbeurive\Filer;
  * The methods that verify signatures are designed to process these situations.
  * However, the unit tests does note cover these situations.
  *
- * @package dbeurive\Filer
+ * @package dbeurive\Gpg
  */
 
 class Gpg

@@ -30,7 +30,7 @@
 
 
 
-use dbeurive\Filer\Gpg;
+use dbeurive\Gpg\Gpg;
 
 class GpgTest extends PHPUnit_Framework_TestCase
 {

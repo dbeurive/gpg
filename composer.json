@@ -1,4 +1,15 @@
 {
+  "version": "1.0.0",
+  "name": "dbeurive/Gpg",
+  "description": "This package contains the implementation of a simple GPG wrapper",
+  "license": "Common Attribution-NonCommercial 4.0 International license",
+  "authors": [
+    {
+      "name": "Denis BEURIVE",
+      "email": "denis.beurive@gmail.com"
+    }
+  ],
+  "keywords": ["GPG"],
   "autoload": {
     "psr-4": {
       "dbeurive\\Gpg\\": "src"

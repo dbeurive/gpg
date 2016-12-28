@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "dbeurive/Gpg",
+  "name": "dbeurive/gpg",
   "description": "This package contains the implementation of a simple GPG wrapper",
   "license": "Common Attribution-NonCommercial 4.0 International license",
   "authors": [

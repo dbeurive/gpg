@@ -335,9 +335,13 @@ Please note that
 * the last field of each line may have spaces (ex: `PHP coder <php_coder@php.com>`).
 * a key may have more than one sub key. Therefore, a line may have more than 6 columns.
 
-# Creating a graphical representation of keys
+# Creating printed backups of private keys
 
-You can print this graphical representation on paper.
+You can produce graphical representations of your private keys. 
+These representations can be printed on paper.
+
+> Please note that you should not need to produce graphical representations of your public keys.
+> Indeed, public keys do not need to be protected. Therefore you can make copies of your public keys everywhere.
 
 Install Data Matrix tools:
 
@@ -362,10 +366,11 @@ Generate a very long RSA keys:
 
     $ cat batch.txt | gpg --enable-large-rsa --batch --gen-key
 
-Find the fingerprint of the generated keys:
+Find the ID or the fingerprint of the generated keys:
+ 
+By ID:
  
     $ gpg --list-keys
-
     sec   8192R/9BEF3AAC 2016-12-30
     uid                  Tester Long (This is for testing) <joe-long@foo.bar>
     ssb   8192R/3A57FB1C 2016-12-30
@@ -373,12 +378,19 @@ Find the fingerprint of the generated keys:
     gpg --export 9BEF3AAC > very-long-key.pub
     gpg --export-secret-key 9BEF3AAC > very-long-key.prv
 
+By fingerprint:
+
+    $ gpg --list-keys --fingerprint --with-colons
+    pub:-:8192:1:FB9F45539BEF3AAC:2016-12-30:::-:Tester Long (This is for testing) <joe-long@foo.bar>::escaESCA:
+    fpr:::::::::1335EF5C02BEF36A56DBA451FB9F45539BEF3AAC:
+    sub:-:8192:1:1D4050C33A57FB1C:2016-12-30::::::esa:
+
 Then generate images that represent the private key:
 
-> Please note that you should not need to produce graphical representations of your public keys.
-> Indeed, public keys do not need to be protected. Therefore you can make copies of your public keys everywhere.
-
     gpg --export-secret-key 9BEF3AAC | paperkey --output-type raw | split -b 1500 - key-
+
+    # Or:
+    # gpg --export-secret-key 1335EF5C02BEF36A56DBA451FB9F45539BEF3AAC | paperkey --output-type raw | split -b 1500 - key-
 
     $ cat -n gen-images.sh 
          1	#!/bin/bash
@@ -419,6 +431,12 @@ The list of images that represents the private key is:
     $ ./gen-key.sh 
 
     $ paperkey --pubring ~/.gnupg/pubring.gpg --secrets key.prv > restore.raw
+    
+    # Or:
+    # paperkey --pubring very-long-key.pub --secrets key.prv > restore.raw
+
+> Please note that you need the public key in order to regenerate the private key!
+> The public key can be stored within the public keyring, or within a file. 
 
 Compare the restored key against the original:
 

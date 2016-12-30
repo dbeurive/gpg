@@ -1467,6 +1467,7 @@ class Gpg
         $cmd[] = self::EXE_GPG;
         $cmd[] = '--batch';
         $cmd[] = '--yes';
+        $cmd[] = '--always-trust';
         $cmd[] = '--output';
         $cmd[] = escapeshellarg($tempCommandOutputPath);
         $cmd[] = '--status-fd';

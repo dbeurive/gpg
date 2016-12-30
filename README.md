@@ -116,16 +116,16 @@ To sign a document means: encrypt the document using the private key.
 
 Command:
 
-    gpg --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.sig --sign document
+    gpg --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.pgp --sign document
     
-For automation inside a script:
+    # For automation inside a script:
     
-    exec 3> /tmp/status; gpg --batch --yes --status-fd 3 --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output file_to_sign.sig --clearsign file_to_sign.txt; echo $?; exec 3>&-
+    exec 3> /tmp/status; echo 'password' | gpg --batch --yes --always-trust --status-fd 3 --passphrase-fd 0 --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.pgp --sign document; echo $?; exec 3>&-
     
 Then to decrypt the document (using the public key)
 
-    gpg --output document.decrypted --decrypt document.sig
-    gpg --output - --decrypt document.sig
+    gpg --output document.decrypted --decrypt document.pgp
+    gpg --output - --decrypt document.pgp
 
 > Please note that you can use the **sub key** associated to the private key instead of the private key itself.
 
@@ -153,11 +153,15 @@ To "clear sign" a document means:
 
 Command:
 
-    gpg --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.sig --clearsign document
+    gpg --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.pgp --clearsign document
+    
+    # For automation inside a script:
+    
+    exec 3> /tmp/status; echo 'password' | gpg --batch --yes --always-trust --status-fd 3 --passphrase-fd 0 --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.pgp --clearsign document; echo $?; exec 3>&-
     
 Verify the signature:
 
-    gpg --verify document.sig 
+    gpg --verify document.pgp 
 
 ## API
 
@@ -186,11 +190,15 @@ The difference between a "detached signature" and a "clear signature" is that th
 
 Command:
 
-    gpg --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.sig --detach-sign document
+    gpg --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.PGP --detach-sign document
     
+    # For automation inside a script:
+        
+    exec 3> /tmp/status; echo 'password' | gpg --batch --yes --always-trust --status-fd 3 --passphrase-fd 0 --armor -u 03DEC874738344206A1A7D31E07D9D14954C8DC5 --output document.pgp --detach-sign document; echo $?; exec 3>&-
+
 Verify the signature:
 
-    gpg --verify document.sig document 
+    gpg --verify document.pgp document 
 
 ## API
 
@@ -206,15 +214,21 @@ Verify a signature:
 
 # Encrypting a document (using a public key) 
 
+Please note that in GPG lingo, encryption using a private key is called "signing" (which, technically speaking, is an encryption).
+
 ## Command line
 
 Command:
 
-    gpg --armor --output encrypted_file --encrypt --recipient 03DEC874738344206A1A7D31E07D9D14954C8DC5 file_to_sign.txt
+    gpg --armor --output encrypted_file --encrypt --recipient 03DEC874738344206A1A7D31E07D9D14954C8DC5 document
+    
+    # For automation inside a script:
+    
+    exec 3> /tmp/status; gpg --batch --yes --status-fd 3 --always-trust --armor --output document.pgp --encrypt --recipient 03DEC874738344206A1A7D31E07D9D14954C8DC5 document; echo $?; exec 3>&-
 
-For automation inside a script:
+Decrypt the file (using a private key):
 
-    exec 3> /tmp/status; gpg --batch --yes --status-fd 3 --always-trust --armor --output encrypted_file --encrypt --recipient 03DEC874738344206A1A7D31E07D9D14954C8DC5 file_to_sign.txt; echo $?; exec 3>&-
+    gpg --output document --decrypt document.pgp
 
 ## API
 
@@ -232,11 +246,11 @@ Please note that the document may have been encrypted using a public key or a se
 
 Command:
 
-    gpg --output decrypted_file --decrypt encrypted_file
+    gpg --output document --decrypt document.pgp
 
 For automation inside a script:
 
-    exec 3> /tmp/status; gpg --batch --yes --status-fd 3 --always-trust --output decrypted_file --decrypt encrypted_file; echo $?; exec 3>&-
+    exec 3> /tmp/status; echo 'password' | gpg --batch --yes --status-fd 3 --passphrase-fd 0 --always-trust --output document --decrypt document.pgp; echo $?; exec 3>&-
 
 ## API
 
@@ -320,8 +334,134 @@ Please note that
 
 * the last field of each line may have spaces (ex: `PHP coder <php_coder@php.com>`).
 * a key may have more than one sub key. Therefore, a line may have more than 6 columns.
+
+# Creating a graphical representation of keys
+
+You can print this graphical representation on paper.
+
+Install Data Matrix tools:
+
+    sudo apt-get install  dmtx-utils
+
+Generate a very long RSA keys:
+
+    cat -n batch.txt 
+         1	%echo Generating a basic OpenPGP key
+         2	Key-Type: RSA
+         3	Key-Length: 8192
+         4	Subkey-Type: RSA
+         5	Subkey-Length: 8192
+         6	Name-Real: Tester Long
+         7	Name-Comment: This is for testing
+         8	Name-Email: joe-long@foo.bar
+         9	Expire-Date: 0
+        10	Passphrase: abc
+        11	# Do a commit here, so that we can later print "done" :-)
+        12	%commit
+        13	%echo done
+
+    $ cat batch.txt | gpg --enable-large-rsa --batch --gen-key
+
+Find the fingerprint of the generated keys:
  
+    $ gpg --list-keys
+
+    sec   8192R/9BEF3AAC 2016-12-30
+    uid                  Tester Long (This is for testing) <joe-long@foo.bar>
+    ssb   8192R/3A57FB1C 2016-12-30
+
+    gpg --export 9BEF3AAC > very-long-key.pub
+    gpg --export-secret-key 9BEF3AAC > very-long-key.prv
+
+Then generate images that represent the private key:
+
+> Please note that you should not need to produce graphical representations of your public keys.
+> Indeed, public keys do not need to be protected. Therefore you can make copies of your public keys everywhere.
+
+    gpg --export-secret-key 9BEF3AAC | paperkey --output-type raw | split -b 1500 - key-
+
+    $ cat -n gen-images.sh 
+         1	#!/bin/bash
+         2	
+         3	for K in key-*; do
+         4	    dmtxwrite -e 8 $K > $K.png
+         5	done
+    
+    $ ./gen-images.sh
+    
+    $ ls -1 *.png
+    key-aa.png
+    key-ab.png
+    key-ac.png
+    key-ad.png
+
+The list of images that represents the private key is:
+
+![key-aa.png](tests/data/key-aa.png)
+
+![key-ab.png](tests/data/key-ab.png)
+
+![key-ac.png](tests/data/key-ac.png)
+
+![key-ad.png](tests/data/key-ad.png)
+
+# Regenerate keys from their graphical representations
+
+    $ cat -n gen-key.sh 
+         1	#!/bin/bash
+         2	
+         3	rm -f key.prv
+         4	for K in key-*.png; do
+         5	    echo $K
+         6	    dmtxread $K >> key.prv
+         7	done
+
+    $ ./gen-key.sh 
+
+    $ paperkey --pubring ~/.gnupg/pubring.gpg --secrets key.prv > restore.raw
+
+Compare the restored key against the original:
+
+    gpg --list-packets restore.raw > f1
+    gpg --list-packets very-long-key.prv > f2
+    diff f1 f2
+
+If you try to import the restored private key:
+
+    $ gpg --import restore.raw 
+    gpg: key 9BEF3AAC: already in secret keyring
+    gpg: Total number processed: 1
+    gpg:       secret keys read: 1
+    gpg:  secret keys unchanged: 1
+
+Sign a document with the original private key:
+
+    gpg -u 9BEF3AAC --sign gen-key.sh
+
+Remove the original private key from its keyring:
+
+    gpg --delete-secret-keys 9BEF3AAC
+    
+Restore the secret key using the backup:
+
+    $ gpg --import restore.raw 
+    gpg: key 9BEF3AAC: secret key imported
+    gpg: key 9BEF3AAC: "Tester Long (This is for testing) <joe-long@foo.bar>" not changed
+    gpg: Total number processed: 1
+    gpg:              unchanged: 1
+    gpg:       secret keys read: 1
+    gpg:   secret keys imported: 1
+
+Then, make sure that the restored secret key works as expected:
+
+    $ gpg --output script.sh --decrypt gen-key.sh.gpg
+     
+    $ diff gen-key.sh script.sh 
+
 # Useful links
     
 https://www.void.gr/kargig/blog/2013/12/02/creating-a-new-gpg-key-with-subkeys/
+
 http://www.spywarewarrior.com/uiuc/gpg/gpg-com-4.htm
+
+

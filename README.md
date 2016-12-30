@@ -351,6 +351,7 @@ Install Data Matrix tools:
 
 Generate a very long RSA keys:
 
+```sh
     $ cat -n batch.txt 
          1	%echo Generating a basic OpenPGP key
          2	Key-Type: RSA
@@ -367,11 +368,13 @@ Generate a very long RSA keys:
         13	%echo done
 
     $ cat batch.txt | gpg --enable-large-rsa --batch --gen-key
+```
 
 Find the ID or the fingerprint of the generated keys:
  
 By ID:
  
+ ```sh
     $ gpg --list-keys
     sec   8192R/9BEF3AAC 2016-12-30
     uid                  Tester Long (This is for testing) <joe-long@foo.bar>
@@ -380,16 +383,20 @@ By ID:
     $ gpg --export 9BEF3AAC > very-long-key.pub
     
     $ gpg --export-secret-key 9BEF3AAC > very-long-key.prv
+```
 
 By fingerprint:
 
+```sh
     $ gpg --list-keys --fingerprint --with-colons
     pub:-:8192:1:FB9F45539BEF3AAC:2016-12-30:::-:Tester Long (This is for testing) <joe-long@foo.bar>::escaESCA:
     fpr:::::::::1335EF5C02BEF36A56DBA451FB9F45539BEF3AAC:
     sub:-:8192:1:1D4050C33A57FB1C:2016-12-30::::::esa:
+```
 
 Then generate images that represent the private key:
 
+```sh
     $ gpg --export-secret-key 9BEF3AAC | paperkey --output-type raw | split -b 1500 - key-
 
     # Or:
@@ -409,6 +416,7 @@ Then generate images that represent the private key:
     key-ab.png
     key-ac.png
     key-ad.png
+```
 
 The list of images that represents the private key is:
 
@@ -422,6 +430,7 @@ The list of images that represents the private key is:
 
 # Regenerate keys from their graphical representations
 
+```sh
     $ cat -n gen-key.sh 
          1	#!/bin/bash
          2	
@@ -437,34 +446,46 @@ The list of images that represents the private key is:
     
     # Or:
     # paperkey --pubring very-long-key.pub --secrets key.prv > restore.raw
+```
 
 > Please note that you need the public key in order to regenerate the private key!
 > The public key can be stored within the public keyring, or within a file. 
 
 Compare the restored key against the original:
 
-    gpg --list-packets restore.raw > f1
-    gpg --list-packets very-long-key.prv > f2
-    diff f1 f2
+```sh
+    $ gpg --list-packets restore.raw > f1
+    
+    $ gpg --list-packets very-long-key.prv > f2
+    
+    $ diff f1 f2
+```
 
 If you try to import the restored private key:
 
+```sh
     $ gpg --import restore.raw 
     gpg: key 9BEF3AAC: already in secret keyring
     gpg: Total number processed: 1
     gpg:       secret keys read: 1
     gpg:  secret keys unchanged: 1
+```
 
 Sign a document with the original private key:
 
-    gpg -u 9BEF3AAC --sign gen-key.sh
+```sh
+    $ gpg -u 9BEF3AAC --sign gen-key.sh
+```
 
 Remove the original private key from its keyring:
 
-    gpg --delete-secret-keys 9BEF3AAC
+```sh
+    $ gpg --delete-secret-keys 9BEF3AAC
+```
     
 Restore the secret key using the backup:
 
+```sh
     $ gpg --import restore.raw 
     gpg: key 9BEF3AAC: secret key imported
     gpg: key 9BEF3AAC: "Tester Long (This is for testing) <joe-long@foo.bar>" not changed
@@ -472,12 +493,15 @@ Restore the secret key using the backup:
     gpg:              unchanged: 1
     gpg:       secret keys read: 1
     gpg:   secret keys imported: 1
+```
 
 Then, make sure that the restored secret key works as expected:
 
+```
     $ gpg --output script.sh --decrypt gen-key.sh.gpg
      
     $ diff gen-key.sh script.sh 
+```
 
 # Useful links
     

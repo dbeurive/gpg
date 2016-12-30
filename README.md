@@ -345,11 +345,13 @@ These representations can be printed on paper.
 
 Install Data Matrix tools:
 
-    sudo apt-get install  dmtx-utils
+```sh
+    $ sudo apt-get install  dmtx-utils
+```
 
 Generate a very long RSA keys:
 
-    cat -n batch.txt 
+    $ cat -n batch.txt 
          1	%echo Generating a basic OpenPGP key
          2	Key-Type: RSA
          3	Key-Length: 8192
@@ -375,8 +377,9 @@ By ID:
     uid                  Tester Long (This is for testing) <joe-long@foo.bar>
     ssb   8192R/3A57FB1C 2016-12-30
 
-    gpg --export 9BEF3AAC > very-long-key.pub
-    gpg --export-secret-key 9BEF3AAC > very-long-key.prv
+    $ gpg --export 9BEF3AAC > very-long-key.pub
+    
+    $ gpg --export-secret-key 9BEF3AAC > very-long-key.prv
 
 By fingerprint:
 
@@ -387,7 +390,7 @@ By fingerprint:
 
 Then generate images that represent the private key:
 
-    gpg --export-secret-key 9BEF3AAC | paperkey --output-type raw | split -b 1500 - key-
+    $ gpg --export-secret-key 9BEF3AAC | paperkey --output-type raw | split -b 1500 - key-
 
     # Or:
     # gpg --export-secret-key 1335EF5C02BEF36A56DBA451FB9F45539BEF3AAC | paperkey --output-type raw | split -b 1500 - key-

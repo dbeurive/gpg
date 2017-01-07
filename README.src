@@ -16,6 +16,18 @@ This code is published under the following license:
 
 See the file [LICENSE.TXT](LICENSE.TXT)
 
+# Installation
+
+From the command line:
+
+    composer require dbeurive/gpg
+
+Or, from within the file `composer.json`:
+
+    "require": {
+        "dbeurive/gpg": "*"
+    }
+
 # Synopsis
 
 ```php

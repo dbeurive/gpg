@@ -1,30 +1,31 @@
 - [Introduction](#a0)
 - [License](#a1)
-- [Synopsis](#a2)
-- [Signing a document (using the private key)](#a3)
-  * [Command line](#a4)
-  * [API](#a5)
-- [Clear signing a document (using the private key)](#a6)
-  * [Command line](#a7)
-  * [API](#a8)
-- [Creating a detached signature (using the private key)](#a9)
-  * [Command line](#a10)
-  * [API](#a11)
-- [Encrypting a document (using a public key)](#a12)
-  * [Command line](#a13)
-  * [API](#a14)
-- [Decrypt a encrypted file](#a15)
-  * [Command line](#a16)
-  * [API](#a17)
-- [Key management](#a18)
-  * [API](#a19)
-- [Other methods](#a20)
-- [Testing the package](#a21)
-  * [Importing these keys](#a22)
-  * [Getting IDs and fingerprints](#a23)
-- [Creating printed backups of private keys](#a24)
-- [Regenerate keys from their graphical representations](#a25)
-- [Useful links](#a26)
+- [Installation](#a2)
+- [Synopsis](#a3)
+- [Signing a document (using the private key)](#a4)
+  * [Command line](#a5)
+  * [API](#a6)
+- [Clear signing a document (using the private key)](#a7)
+  * [Command line](#a8)
+  * [API](#a9)
+- [Creating a detached signature (using the private key)](#a10)
+  * [Command line](#a11)
+  * [API](#a12)
+- [Encrypting a document (using a public key)](#a13)
+  * [Command line](#a14)
+  * [API](#a15)
+- [Decrypt a encrypted file](#a16)
+  * [Command line](#a17)
+  * [API](#a18)
+- [Key management](#a19)
+  * [API](#a20)
+- [Other methods](#a21)
+- [Testing the package](#a22)
+  * [Importing these keys](#a23)
+  * [Getting IDs and fingerprints](#a24)
+- [Creating printed backups of private keys](#a25)
+- [Regenerate keys from their graphical representations](#a26)
+- [Useful links](#a27)
 
 
 # <a name="a0"></a>Introduction
@@ -43,7 +44,19 @@ This code is published under the following license:
 
 See the file [LICENSE.TXT](LICENSE.TXT)
 
-# <a name="a2"></a>Synopsis
+# <a name="a2"></a>Installation
+
+From the command line:
+
+    composer require dbeurive/gpg
+
+Or, from within the file `composer.json`:
+
+    "require": {
+        "dbeurive/gpg": "*"
+    }
+
+# <a name="a3"></a>Synopsis
 
 ```php
 // Get the fingerprint of a key.
@@ -137,11 +150,11 @@ $decryptedString = Gpg::decryptString($encryptedString, null, null);
 
 For a detailed description of the return codes, please consult [this file](src/Gpg.php).
 
-# <a name="a3"></a>Signing a document (using the private key)
+# <a name="a4"></a>Signing a document (using the private key)
 
 To sign a document means: encrypt the document using the private key.
 
-## <a name="a4"></a>Command line
+## <a name="a5"></a>Command line
 
 Command:
 
@@ -158,7 +171,7 @@ Then to decrypt the document (using the public key)
 
 > Please note that you can use the **sub key** associated to the private key instead of the private key itself.
 
-## <a name="a5"></a>API
+## <a name="a6"></a>API
 
 Sign:
 
@@ -170,7 +183,7 @@ Decrypt:
     static function decryptFile($inAbsolutePath, $inOptPassword=null, $inOptOutputFile=null)
     static function decryptString($inString, $inOptPassword=null, $inOptOutputFile=null)
 
-# <a name="a6"></a>Clear signing a document (using the private key)
+# <a name="a7"></a>Clear signing a document (using the private key)
 
 To "clear sign" a document means:
 
@@ -178,7 +191,7 @@ To "clear sign" a document means:
 * encrypt the previously generated hash with the private key.
 * append the encrypted hash to the end of the document (which remains clear).
 
-## <a name="a7"></a>Command line
+## <a name="a8"></a>Command line
 
 Command:
 
@@ -192,7 +205,7 @@ Verify the signature:
 
     gpg --verify document.pgp
 
-## <a name="a8"></a>API
+## <a name="a9"></a>API
 
 Sign:
 
@@ -204,7 +217,7 @@ Verify the signature:
     static function verifyClearSignedFile($inFilePath, &$outWarning)
     static function verifyClearSignedString($inString, &$outWarning) {
 
-# <a name="a9"></a>Creating a detached signature (using the private key)
+# <a name="a10"></a>Creating a detached signature (using the private key)
 
 Creating a "detached signature" means:
 
@@ -215,7 +228,7 @@ Creating a "detached signature" means:
 Please note that a "detached signature" and a "clear signature" are identical.
 The difference between a "detached signature" and a "clear signature" is that the former is put into a separate file, whereas the latter is appended to the end of the signed document.
 
-## <a name="a10"></a>Command line
+## <a name="a11"></a>Command line
 
 Command:
 
@@ -229,7 +242,7 @@ Verify the signature:
 
     gpg --verify document.pgp document
 
-## <a name="a11"></a>API
+## <a name="a12"></a>API
 
 Sign:
 
@@ -241,11 +254,11 @@ Verify a signature:
     static function verifyDetachedSignedFile($inSignatureFilePath, $inDocument, &$outWarning)
     static function verifyDetachedSignedString($inSignature, $inDocument, &$outWarning)
 
-# <a name="a12"></a>Encrypting a document (using a public key)
+# <a name="a13"></a>Encrypting a document (using a public key)
 
 Please note that in GPG lingo, encryption using a private key is called "signing" (which, technically speaking, is an encryption).
 
-## <a name="a13"></a>Command line
+## <a name="a14"></a>Command line
 
 Command:
 
@@ -259,19 +272,19 @@ Decrypt the file (using a private key):
 
     gpg --output document --decrypt document.pgp
 
-## <a name="a14"></a>API
+## <a name="a15"></a>API
 
     static function encryptAsymmetricFile($inInputPath, $inPublicKeyFingerPrint, $inOptOutputFile=null)
     static function encryptAsymmetricString($inString, $inPublicKeyFingerPrint, $inOptOutputFile=null)
 
-# <a name="a15"></a>Decrypt a encrypted file
+# <a name="a16"></a>Decrypt a encrypted file
 
 Please note that the document may have been encrypted using a public key or a secret key (that is, _signed_).
 
 * If the document has been encrypted with a public key (probably yours), you will need a private key to decrypt it.
 * If the document has been signed with a private key, you will need a public key to decrypt it.
 
-## <a name="a16"></a>Command line
+## <a name="a17"></a>Command line
 
 Command:
 
@@ -281,17 +294,17 @@ For automation inside a script:
 
     exec 3> /tmp/status; echo 'password' | gpg --batch --yes --status-fd 3 --passphrase-fd 0 --always-trust --output document --decrypt document.pgp; echo $?; exec 3>&-
 
-## <a name="a17"></a>API
+## <a name="a18"></a>API
 
     static function decryptFile($inAbsolutePath, $inOptPassword=null, $inOptOutputFile=null)
     static function decryptString($inString, $inOptPassword=null, $inOptOutputFile=null)
 
-# <a name="a18"></a>Key management
+# <a name="a19"></a>Key management
 
 Except when calling the methods that returns the fingerprints (`getPublicKeyFingerPrint` and `getPrivateKeyFingerPrint`), the keys are identified by their fingerprints
 This ensures maximum security against "side effects" that may occur when specifying keys' IDs.
 
-## <a name="a19"></a>API
+## <a name="a20"></a>API
 
     static function getPublicKeyFingerPrint($inPublicKey)
     static function getPrivateKeyFingerPrint($inPrivateKey)
@@ -302,12 +315,12 @@ This ensures maximum security against "side effects" that may occur when specify
     static function importPrivateKey($inPrivateKeyPath)
     static function importPublicKey($inPublicKeyPath)
 
-# <a name="a20"></a>Other methods
+# <a name="a21"></a>Other methods
 
     static function version()
     static function checkVersion()
 
-# <a name="a21"></a>Testing the package
+# <a name="a22"></a>Testing the package
 
 This package contains two pairs of keys:
 
@@ -319,12 +332,12 @@ These keys are located in the directory `tests/data`:
 * `open.prv` / `open.pub`: this pair of keys is not protected.
 * `protected.prv` / `protected.pub`: this pair of keys is protected.
 
-## <a name="a22"></a>Importing these keys
+## <a name="a23"></a>Importing these keys
 
     cd tests/data
     gpg --import open.prv; gpg --import open.pub; gpg --import protected.prv; gpg --import protected.pub
 
-## <a name="a23"></a>Getting IDs and fingerprints
+## <a name="a24"></a>Getting IDs and fingerprints
 
 For public keys:
 
@@ -364,7 +377,7 @@ Please note that
 * the last field of each line may have spaces (ex: `PHP coder <php_coder@php.com>`).
 * a key may have more than one sub key. Therefore, a line may have more than 6 columns.
 
-# <a name="a24"></a>Creating printed backups of private keys
+# <a name="a25"></a>Creating printed backups of private keys
 
 You can produce graphical representations of your private keys.
 These representations can be printed on paper.
@@ -457,7 +470,7 @@ The list of images that represents the private key is:
 
 ![key-ad.png](tests/data/key-ad.png)
 
-# <a name="a25"></a>Regenerate keys from their graphical representations
+# <a name="a26"></a>Regenerate keys from their graphical representations
 
 ```sh
     $ cat -n gen-key.sh
@@ -532,7 +545,7 @@ Then, make sure that the restored secret key works as expected:
     $ diff gen-key.sh script.sh
 ```
 
-# <a name="a26"></a>Useful links
+# <a name="a27"></a>Useful links
 
 https://www.void.gr/kargig/blog/2013/12/02/creating-a-new-gpg-key-with-subkeys/
 

@@ -1466,6 +1466,7 @@ class Gpg
 
         $cmd[] = self::EXE_GPG;
         $cmd[] = '--batch';
+        $cmd[] = '--pinentry-mode=loopback';
         $cmd[] = '--yes';
         $cmd[] = '--always-trust';
         $cmd[] = '--output';

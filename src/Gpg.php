@@ -1533,7 +1533,7 @@ class Gpg
         );
     }
 
-    private function __unlink($inPath) {
+    private static function __unlink($inPath) {
         if (file_exists($inPath)) {
             if (false === unlink($inPath)) {
                 throw new \Exception("Can not delete the file <$inPath>");

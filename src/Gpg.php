@@ -344,6 +344,7 @@ class Gpg
             if (self::STATUS_KEY_ABSENT == self::__getListKeysStatus($output)) {
                 return false;
             }
+            return false;
         }
 
         throw new \Exception("Error while executing the following command: " . $result[self::KEY_COMMAND]);
@@ -1297,7 +1298,15 @@ class Gpg
                 return self::STATUS_KEY_ABSENT;
             }
 
+            if (1 === preg_match('/^gpg: error reading key: No public key/i', $_line)) {
+                return self::STATUS_KEY_ABSENT;
+            }
+
             if (1 === preg_match('/^gpg: error reading key: secret key not available/i', $_line)) {
+                return self::STATUS_KEY_ABSENT;
+            }
+
+            if (1 === preg_match('/^gpg: error reading key: No secret key/i', $_line)) {
                 return self::STATUS_KEY_ABSENT;
             }
         }
@@ -1438,7 +1447,7 @@ class Gpg
      * @throws \Exception
      */
     static private function __exec(array $inCliArguments, $inOptOutputFile=null, $inOptPassword=null) {
-
+        
         // Create the temporary file used to store status information.
         $tempStatusFilePath = tempnam(sys_get_temp_dir(), 'Gpg-Status-File::');
 
